@@ -11,7 +11,7 @@ public class PersonService implements  AdvancedRepository {
 
     private AddressService addressService;
 
-    private CrudRepository<Person, Long> personRepository;
+    private CrudRepository<Long, Person> personRepository;
 
     public PersonService(AddressService addressService) {
         this.addressService = addressService;
