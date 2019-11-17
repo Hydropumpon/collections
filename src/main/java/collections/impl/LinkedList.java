@@ -11,6 +11,11 @@ public class LinkedList<E> implements List<E> {
         return false;
     }
 
+    public boolean add(E e, int index) {
+        //todo написать реализацию
+        return false;
+    }
+
     @Override
     public E remove(int index) {
         //todo написать реализацию
