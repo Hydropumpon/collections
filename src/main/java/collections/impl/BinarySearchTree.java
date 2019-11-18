@@ -123,6 +123,7 @@ public class BinarySearchTree<E extends Comparable<E>> implements Iterable
 
 	public void reverse()
 	{
+		if (root!=null)
 		reverseTree(root);
 	}
 
