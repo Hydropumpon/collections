@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Person {
+    private Long id;
 
     private String name;
 
@@ -50,5 +51,15 @@ public class Person {
 
     public void addRelatives(Person relative) {
         this.relatives.add(relative);
+    }
+
+    public Long getId()
+    {
+        return this.id;
+    }
+
+    public void setId(Long id)
+    {
+        this.id = id;
     }
 }

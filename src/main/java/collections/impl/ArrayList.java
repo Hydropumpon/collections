@@ -7,10 +7,12 @@ import lombok.Data;
 import java.util.Arrays;
 
 @Data
+@TestAnnotation
 public class ArrayList<E> implements List<E>
 {
     private static final int DEFAULT_CAPACITY = 16;
     private static final int MINIMAL_CAPACITY = 1;
+    @TestAnnotation
     private static final int MAXIMAL_CAPACITY = Integer.MAX_VALUE - 8;
     private E[] elements;
     private int size;
