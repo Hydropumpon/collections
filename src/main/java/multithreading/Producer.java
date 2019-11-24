@@ -5,14 +5,11 @@ import java.util.concurrent.Semaphore;
 
 public class Producer implements Runnable
 {
-	private Semaphore producerSemaphore;
-	private Semaphore consumerSemaphore;
 	private Shared shared;
 
-	public Producer(Semaphore producerSemaphore, Semaphore consumerSemaphore, Shared shared)
+	public Producer(Shared shared)
 	{
-		this.producerSemaphore = producerSemaphore;
-		this.consumerSemaphore = consumerSemaphore;
+
 		this.shared = shared;
 	}
 
@@ -24,16 +21,8 @@ public class Producer implements Runnable
 		{
 			try
 			{
-				System.out.println("Producer is trying to acquire semaphore");
-				producerSemaphore.acquire();
-				System.out.println("Producer acquired semaphore");
 				int randomValue = random.nextInt(100);
-				System.out.println("Put in queue" + randomValue);
-				synchronized (shared)
-				{
-					shared.add(randomValue);
-				}
-				consumerSemaphore.release();
+				shared.add(randomValue);
 				Thread.sleep(1000);
 
 			} catch (InterruptedException e)
