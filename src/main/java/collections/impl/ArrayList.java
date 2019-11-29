@@ -5,149 +5,151 @@ import collections.List;
 import lombok.Data;
 
 import java.util.Arrays;
+import java.util.NoSuchElementException;
 
 @Data
 @TestAnnotation
 public class ArrayList<E> implements List<E>
 {
-    private static final int DEFAULT_CAPACITY = 16;
-    private static final int MINIMAL_CAPACITY = 1;
-    @TestAnnotation
-    private static final int MAXIMAL_CAPACITY = Integer.MAX_VALUE - 8;
-    private E[] elements;
-    private int size;
+	private static final int DEFAULT_CAPACITY = 16;
+	private static final int MINIMAL_CAPACITY = 1;
+	@TestAnnotation
+	private static final int MAXIMAL_CAPACITY = Integer.MAX_VALUE - 8;
+	private E[] elements;
+	private int size;
 
-    public int getCapacity()
-    {
-        return this.elements.length;
-    }
+	public int getCapacity()
+	{
+		return this.elements.length;
+	}
 
-    private boolean isEnlargeNeeded()
-    {
-        return this.size == elements.length;
-    }
+	public ArrayList(int capacity)
+	{
+		checkInitCapacity(capacity);
+		this.elements = (E[]) new Object[capacity];
+	}
 
-    private boolean isTrimNeeded()
-    {
-        return this.size == elements.length / 2;
-    }
+	public ArrayList()
+	{
+		this.elements = (E[]) new Object[DEFAULT_CAPACITY];
+	}
 
-    private boolean isFull()
-    {
-        return this.size == MAXIMAL_CAPACITY;
-    }
+	@Override
+	public boolean add(E e)
+	{
+		if (isFull())
+		{
+			return false;
+		}
+		if (isEnlargeNeeded())
+		{
+			this.elements = changeCapacity(increaseCapacity(elements.length * 2));
+		}
+		this.elements[size] = e;
+		this.size++;
+		return true;
+	}
 
-    private int increaseCapacity(int capacity)
-    {
-        if (capacity < this.elements.length)
-        {
-            capacity = MAXIMAL_CAPACITY;
-        }
-        return capacity;
-    }
+	@Override
+	public E remove(int index)
+	{
+		validateIndex(index);
+		E removed = this.elements[index];
+		int quaMoved = size - index - 1;
+		if (quaMoved > 0)
+		{
+			System.arraycopy(elements, index + 1, elements, index, quaMoved);
+		}
+		this.size--;
+		this.elements[this.size] = null;
+		if (isTrimNeeded())
+		{
+			this.elements = changeCapacity(decreaseCapacity(elements.length / 2));
+		}
+		return removed;
+	}
 
-    private int decreaseCapacity(int capacity)
-    {
-        return Math.max(capacity, MINIMAL_CAPACITY);
-    }
+	public int getSize()
+	{
+		return this.size;
+	}
 
-    private E[] changeCapacity(int capacity)
-    {
-        return Arrays.copyOf(this.elements, capacity);
-    }
+	@Override
+	public E get(int index)
+	{
+		validateIndex(index);
+		return elements[index];
+	}
 
-    public ArrayList(int capacity)
-    {
-        checkInitCapacity(capacity);
-        this.elements = (E[]) new Object[capacity];
-    }
+	private void validateIndex(int index)
+	{
+		if ((index < 0) || (index >= this.size))
+		{
+			throw new IndexOutOfBoundsException();
+		}
+	}
 
-    public ArrayList()
-    {
-        this.elements = (E[]) new Object[DEFAULT_CAPACITY];
-    }
+	@Override
+	public Iterator<E> iterator()
+	{
+		return new Iterator<>()
+		{
+			int cursor = 0;
 
-    private void checkInitCapacity(int capacity)
-    {
-        if (capacity < MINIMAL_CAPACITY)
-        {
-            throw new IllegalArgumentException();
-        }
-    }
+			@Override
+			public boolean hasNext()
+			{
+				return cursor < size;
+			}
 
-    @Override
-    public boolean add(E e)
-    {
-        if (isFull())
-        {
-            return false;
-        }
-        if (isEnlargeNeeded())
-        {
-            this.elements = changeCapacity(increaseCapacity(elements.length * 2));
-        }
-        this.elements[size] = e;
-        this.size++;
-        return true;
-    }
+			@Override
+			public E next()
+			{
+				if (!hasNext()) throw new NoSuchElementException();
+				return elements[cursor++];
+			}
+		};
+	}
 
-    @Override
-    public E remove(int index)
-    {
-        validateIndex(index);
-        E removed = this.elements[index];
-        int quaMoved = size - index - 1;
-        if (quaMoved > 0)
-        {
-            System.arraycopy(elements, index + 1, elements, index, quaMoved);
-        }
-        this.size--;
-        this.elements[this.size] = null;
-        if (isTrimNeeded())
-        {
-            this.elements = changeCapacity(decreaseCapacity(elements.length / 2));
-        }
-        return removed;
-    }
+	private boolean isEnlargeNeeded()
+	{
+		return this.size == elements.length;
+	}
 
-    public int getSize()
-    {
-        return this.size;
-    }
+	private boolean isTrimNeeded()
+	{
+		return this.size == elements.length / 2;
+	}
 
-    @Override
-    public E get(int index)
-    {
-        validateIndex(index);
-        return elements[index];
-    }
+	private boolean isFull()
+	{
+		return this.size == MAXIMAL_CAPACITY;
+	}
 
-    private void validateIndex(int index)
-    {
-        if ((index < 0) || (index >= this.size))
-        {
-            throw new IndexOutOfBoundsException();
-        }
-    }
+	private int increaseCapacity(int capacity)
+	{
+		if (capacity < this.elements.length)
+		{
+			capacity = MAXIMAL_CAPACITY;
+		}
+		return capacity;
+	}
 
-    @Override
-    public Iterator<E> iterator()
-    {
-        return new Iterator<>()
-        {
-            int cursor = 0;
+	private int decreaseCapacity(int capacity)
+	{
+		return Math.max(capacity, MINIMAL_CAPACITY);
+	}
 
-            @Override
-            public boolean hasNext()
-            {
-                return cursor < size;
-            }
+	private E[] changeCapacity(int capacity)
+	{
+		return Arrays.copyOf(this.elements, capacity);
+	}
 
-            @Override
-            public E next()
-            {
-                return elements[cursor++];
-            }
-        };
-    }
+	private void checkInitCapacity(int capacity)
+	{
+		if (capacity < MINIMAL_CAPACITY)
+		{
+			throw new IllegalArgumentException();
+		}
+	}
 }

@@ -5,12 +5,29 @@ import collections.List;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.NoSuchElementException;
+
 @NoArgsConstructor
 public class LinkedList<E> implements List<E>
 {
 	private int size;
 	private Node<E> first;
 	private Node<E> last;
+
+	@Data
+	private class Node<E>
+	{
+		E item;
+		Node<E> next;
+		Node<E> prev;
+
+		Node(E e, Node<E> next, Node<E> prev)
+		{
+			this.item = e;
+			this.next = next;
+			this.prev = prev;
+		}
+	}
 
 	@Override
 	public boolean add(E e)
@@ -27,14 +44,6 @@ public class LinkedList<E> implements List<E>
 		}
 		this.size++;
 		return true;
-	}
-
-	private void validateIndex(int index)
-	{
-		if ((index < 0) || (index >= this.size))
-		{
-			throw new IndexOutOfBoundsException();
-		}
 	}
 
 	public boolean add(E e, int index)
@@ -82,6 +91,49 @@ public class LinkedList<E> implements List<E>
 		return item;
 	}
 
+	@Override
+	public E get(int index)
+	{
+		return getNodeByIndex(index).item;
+	}
+
+	@Override
+	public Iterator<E> iterator()
+	{
+		return new Iterator<>()
+		{
+			Node<E> cursor = first;
+
+			@Override
+			public boolean hasNext()
+			{
+				return (cursor != null);
+			}
+
+			@Override
+			public E next()
+			{
+				if (!hasNext()) throw new NoSuchElementException();
+				E item = cursor.item;
+				cursor = cursor.next;
+				return item;
+			}
+		};
+	}
+
+	public int getSize()
+	{
+		return this.size;
+	}
+
+	private void validateIndex(int index)
+	{
+		if ((index < 0) || (index >= this.size))
+		{
+			throw new IndexOutOfBoundsException();
+		}
+	}
+
 	private Node<E> getNodeByIndex(int index)
 	{
 		validateIndex(index);
@@ -105,57 +157,4 @@ public class LinkedList<E> implements List<E>
 			return node;
 		}
 	}
-
-	@Override
-	public E get(int index)
-	{
-		return getNodeByIndex(index).item;
-	}
-
-	@Override
-	public Iterator<E> iterator()
-	{
-		return new Iterator<>()
-		{
-			Node<E> cursor = first;
-
-			@Override
-			public boolean hasNext()
-			{
-				return (cursor != null);
-			}
-
-			@Override
-			public E next()
-			{
-				E item = cursor.item;
-				cursor = cursor.next;
-				return item;
-			}
-		};
-	}
-
-	public int getSize()
-	{
-		return this.size;
-	}
-
-	@Data
-	private class Node<E>
-	{
-		E item;
-		Node<E> next;
-		Node<E> prev;
-
-		Node(E e, Node<E> next, Node<E> prev)
-		{
-			this.item = e;
-			this.next = next;
-			this.prev = prev;
-		}
-
-
-	}
-
-
 }
